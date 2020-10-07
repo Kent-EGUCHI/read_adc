@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 #一定間隔でサンプリング
-#ポーリングor割り込み禁止などをすると早くなる？
-#プログラム自体はteraailにあったものを参考にした
-#https://teratail.com/questions/16629
+#
 #
 import RPi.GPIO as GPIO
 import time
@@ -29,24 +27,24 @@ list_time = []
 list_value = []
 
 interval = 0.0001 #サンプリング周波数の逆数（秒）
-duration = 0.1 #10s
-sample_num = 100000
-counter = 0
+duration = 0.1 #計測時間
+#sample_num = 100000 #サンプル数
+#counter = 0
 wave = 'sin'
 hz = '4500'
 
 try:
-    time_start = time.perf_counter()
-    time_expired = time_start + interval
-    time_end = time_start + duration
+    time_start = time.perf_counter() #基準となる時刻
+    time_expired = time_start + interval #期限となる時刻
+    time_end = time_start + duration #終了時刻
     while True:
-        time_curr = time.perf_counter()
-        if(time_curr >= time_expired):
-            time_curr = time.perf_counter()
-            list_value.append(readadc_spidev(0))
-            #time_curr = time.perf_counter()
-            list_time.append(time_curr - time_start)
-            time_expired += interval
+        time_curr = time.perf_counter() #現在の時刻を取得
+        if(time_curr >= time_expired): #期限を超えたらサンプリングを開始
+            time_curr = time.perf_counter() #現在の時刻を再取得
+            list_value.append(readadc_spidev(0)) #サンプリング及びデータをリストに格納
+            #time_curr = time.perf_counter() 
+            list_time.append(time_curr - time_start) #基準時刻との差をリストに格納
+            time_expired += interval #期限となる時刻を更新
             #counter += 1
         #if(counter == sample_num):
         if(time_curr >= time_end):
